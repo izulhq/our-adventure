@@ -1,0 +1,49 @@
+.custom-popup .leaflet-popup-content-wrapper {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.2);
+}
+
+.custom-popup-content {
+  padding: 10px;
+  max-width: 300px;
+}
+
+.custom-popup-content h3 {
+  margin: 0 0 5px 0;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.custom-popup-content h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: normal;
+  color: #555;
+}
+
+.custom-popup-content .marker-image {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.custom-popup-content .marker-image img {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 4px;
+}
+
+.custom-popup-content p {
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.custom-popup-content .address {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Make map take full height */
+#map {
+  height: 100vh;
+}
