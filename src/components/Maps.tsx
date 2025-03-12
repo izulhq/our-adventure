@@ -85,7 +85,28 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
 
       // Create layer control if there are multiple groups
       if (Object.keys(markerGroups).length > 1) {
-        L.control.layers({}, markerGroups, { collapsed: false }).addTo(map);
+        const overlays: { [key: string]: L.LayerGroup } = {};
+
+        // For each group, create a layer with custom HTML that keeps elements in line
+        Object.entries(markerGroups).forEach(([groupName, layer]) => {
+          // Create a custom HTML label with the icon and name on the same line
+          const iconUrl =
+            markers.find((m) => m.group === groupName)?.icon || "/marker.png";
+
+          // Use a span to contain both the icon and text to keep them on same line
+          overlays[
+            `<span class="layer-control-item align-middle">
+              <img src="${iconUrl}" class="layer-icon" alt="${groupName}"/>${groupName}
+            </span>`
+          ] = layer;
+        });
+
+        L.control
+          .layers({}, overlays, {
+            collapsed: true,
+            position: "topright",
+          })
+          .addTo(map);
       }
     }
 
