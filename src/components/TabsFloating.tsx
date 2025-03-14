@@ -2,10 +2,8 @@
 
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
-import { Table2, Home, X } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import HomeFloating from "./HomeFloating";
-import TableFloating from "./TableFloating";
 
 function Tabs({
   className,
@@ -81,39 +79,18 @@ export default function TabsFloating({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-2xl bg-white rounded-lg shadow-xl">
-      <div className="absolute top-2 right-2">
-        <button
-          onClick={toggleTabs}
-          className="p-1 rounded-full hover:bg-gradient-to-r from-blue-500 to-blue-700 hover:text-white transition-colors"
-          aria-label="Close"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
-
+    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-xl border-[4px] border-white rounded-lg w-[95vw] md:w-auto">
       <Tabs
         defaultValue={defaultTab}
-        className="w-full mx-auto items-center border border-md rounded-lg p-4 bg-white shadow-xl"
+        className="w-full md:w-[600px] h-[calc(95vw/2)] md:h-[300px] items-center border border-md rounded-sm p-4 bg-[url(/cover.png)] bg-cover bg-center shadow-xl"
+      ></Tabs>
+      <button
+        onClick={toggleTabs}
+        className="absolute top-2 right-2 rounded-full p-1 bg-white hover:bg-gradient-to-r from-blue-500 to-blue-700 hover:text-white transition-colors"
+        aria-label="Close"
       >
-        <div className="flex items-center justify-center gap-4"></div>
-        <TabsList className="grid grid-cols-2 mb-4 gap-4 shadow-md border-t">
-          <TabsTrigger value="home" className="flex items-center gap-2">
-            <Home className="h-4 w-4" />
-            <span>Home</span>
-          </TabsTrigger>
-          <TabsTrigger value="table" className="flex items-center gap-2">
-            <Table2 className="h-4 w-4" />
-            <span>Data Table</span>
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Home and Data Table */}
-        <div className="min-h-[310px] min-w-[300px]">
-          <HomeFloating />
-          <TableFloating />
-        </div>
-      </Tabs>
+        <X className="h-5 w-5" />
+      </button>
     </div>
   );
 }

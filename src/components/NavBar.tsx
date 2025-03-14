@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ChevronUp, Table2, X } from "lucide-react";
 import Dropdown from "./Dropdown";
 import TabsFloating from "./TabsFloating";
+import { FaQuestion } from "react-icons/fa6";
 
 export default function NavBar({
   view,
@@ -56,7 +57,7 @@ export default function NavBar({
                         : "translate-y-0 opacity-100 text-gray-200"
                     }`}
                   >
-                    <Table2 className="w-6 h-6 md:w-5 md:h-5" />
+                    <FaQuestion className="w-6 h-6 md:w-5 md:h-5" />
                   </span>
 
                   {/* Second icon that slides in */}
@@ -67,13 +68,27 @@ export default function NavBar({
                         : "translate-y-full opacity-0"
                     }`}
                   >
-                    <X className="w-6 h-6 md:w-5 md:h-5" />
+                    <X className="w-6 h-6 md:w-5 md:h-5 " />
                   </span>
 
                   {/* Invisible span for maintaining button dimensions */}
                   <span className="relative invisible">
-                    <Table2 className="w-6 h-6 md:w-5 md:h-5" />
+                    <FaQuestion className="w-6 h-6 md:w-5 md:h-5" />
                   </span>
+                </button>
+              </div>
+
+              <div className="relative">
+                <button
+                  onClick={() =>
+                    window.open(
+                      "https://docs.google.com/spreadsheets/d/1ar8gpojbDlqihP_DcMB0ut-S-1BSwHzybnRynIu5tlg/edit?gid=0#gid=0",
+                      "_blank"
+                    )
+                  }
+                  className="p-3 md:p-2 rounded-full shadow-md bg-gradient-to-r from-gray-500 to-gray-700 hover:bg-gradient-to-l"
+                >
+                  <Table2 className="w-6 h-6 md:w-5 md:h-5 text-white" />
                 </button>
               </div>
 

@@ -54,16 +54,11 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
           : "";
 
         const popupContent = `
-          <div class="custom-popup-content">
+          <div class="custom-popup-content space-y-0">
             <h3>${marker.name}</h3>
-            ${marker.secondName ? `<h4>${marker.secondName}</h4>` : ""}
-            ${imageHtml}
             ${marker.description ? `<p>${marker.description}</p>` : ""}
-            ${
-              marker.address
-                ? `<p class="address"><strong>Address:</strong> ${marker.address}</p>`
-                : ""
-            }
+            ${marker.address ? `<p class="address"> ${marker.address}</p>` : ""}
+            ${imageHtml}
           </div>
         `;
 
