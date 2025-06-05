@@ -25,11 +25,8 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
         shadowUrl: markerShadow.src,
       });
 
-      // Initialize map with attribution control disabled
-      const map = L.map("map", { attributionControl: false }).setView(
-        [markers[0]?.latitude || -7.566, markers[0]?.longitude || 110.828],
-        13
-      );
+      // Initialize map without initial view
+      const map = L.map("map", { attributionControl: false });
       mapRef.current = map;
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(
@@ -39,7 +36,13 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
       // Group markers by their group property
       const markerGroups: Record<string, L.LayerGroup> = {};
 
+      // Create bounds object to track marker positions
+      const bounds = L.latLngBounds([]);
+
       markers.forEach((marker) => {
+        // Add marker position to bounds
+        bounds.extend([marker.latitude, marker.longitude]);
+
         // Create custom icon based on marker data
         const customIcon = L.icon({
           iconUrl: marker.icon || "/marker.png",
@@ -77,6 +80,17 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
         }
         leafletMarker.addTo(markerGroups[marker.group]);
       });
+
+      // Fit the map to show all markers with some padding
+      if (markers.length > 0) {
+        map.fitBounds(bounds, {
+          padding: [50, 50], // Add 50px padding around the bounds
+          maxZoom: 13, // Optional: limit maximum zoom level
+        });
+      } else {
+        // Fallback to default view if no markers
+        map.setView([-7.566, 110.828], 13);
+      }
 
       // Create layer control if there are multiple groups
       if (Object.keys(markerGroups).length > 1) {

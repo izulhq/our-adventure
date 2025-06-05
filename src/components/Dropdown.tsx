@@ -11,18 +11,32 @@ export default function Dropdown({ isVisible }: { isVisible: boolean }) {
     >
       <div className="py-1" role="none">
         <a
-          href="#"
+          href="https://gis.izulhq.me/klimatologi"
           className="block px-6 py-2 text-sm text-black hover:bg-white transition-colors"
           role="menuitem"
         >
           Peta Klimatologi
         </a>
         <a
-          href="#"
+          href="https://gis.izulhq.me/gsheets"
           className="block px-6 py-2 text-sm text-black hover:bg-white transition-colors"
           role="menuitem"
         >
-          Coming Soon ...
+          Leaflet x GSheets
+        </a>
+        <a
+          href="https://gis.izulhq.me/klimatologi"
+          className="block px-6 py-2 text-sm text-black hover:bg-white transition-colors"
+          role="menuitem"
+        >
+          Peta Klimatologi
+        </a>
+        <a
+          href="https://gis.izulhq.me"
+          className="block px-6 py-2 text-sm text-black hover:bg-white transition-colors"
+          role="menuitem"
+        >
+          Back to Home
         </a>
       </div>
       <div className="border-t border-black-400" role="none">
