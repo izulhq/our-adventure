@@ -10,6 +10,13 @@ export default function Dropdown({ isVisible }: { isVisible: boolean }) {
       tabIndex={-1}
     >
       <div className="py-1" role="none">
+                <a
+          href="https://github.com/izulhq/our-adventure"
+          className="block px-6 py-2 text-sm text-black hover:bg-white transition-colors"
+          role="menuitem"
+        >
+          View Source Code
+        </a>
         <a
           href="https://gis.izulhq.me/klimatologi"
           className="block px-6 py-2 text-sm text-black hover:bg-white transition-colors"
@@ -26,6 +33,7 @@ export default function Dropdown({ isVisible }: { isVisible: boolean }) {
         </a>
         <a
           href="https://gis.izulhq.me/klimatologi"
+          target="_blank"
           className="block px-6 py-2 text-sm text-black hover:bg-white transition-colors"
           role="menuitem"
         >
