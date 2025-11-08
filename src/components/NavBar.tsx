@@ -45,7 +45,7 @@ export default function NavBar({
                   onClick={toggleTabs}
                   className={`p-3 md:p-2 rounded-full shadow-md overflow-hidden ${
                     showTabs
-                      ? "bg-gradient-to-r from-gray-500 to-gray-700 hover:bg-gradient-to-l"
+                      ? "bg-gradient-to-r from-red-500 to-red-700 hover:bg-gradient-to-l"
                       : "bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l"
                   } focus:outline-none`}
                 >
