@@ -45,8 +45,8 @@ export default function NavBar({
                   onClick={toggleTabs}
                   className={`p-3 md:p-2 rounded-full shadow-md overflow-hidden ${
                     showTabs
-                      ? "bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l"
-                      : "bg-gradient-to-r from-gray-500 to-gray-700 hover:bg-gradient-to-l"
+                      ? "bg-gradient-to-r from-gray-500 to-gray-700 hover:bg-gradient-to-l"
+                      : "bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l"
                   } focus:outline-none`}
                 >
                   {/* First icon that slides out */}
@@ -86,7 +86,7 @@ export default function NavBar({
                       "_blank"
                     )
                   }
-                  className="p-3 md:p-2 rounded-full shadow-md bg-gradient-to-r from-gray-500 to-gray-700 hover:bg-gradient-to-l group"
+                  className="p-3 md:p-2 rounded-full shadow-md bg-gradient-to-r from-green-600 to-green-700 hover:bg-gradient-to-l group"
                 >
                   <Table2 className="w-6 h-6 md:w-5 md:h-5 text-white" />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 border border-gray-400 shadow-md bg-white text-gray-800 text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">

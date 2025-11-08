@@ -39,7 +39,7 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
       // Create bounds object to track marker positions
       const bounds = L.latLngBounds([]);
 
-      markers.forEach((marker) => {
+      markers.forEach((marker, i) => {
         // Add marker position to bounds
         bounds.extend([marker.latitude, marker.longitude]);
 
@@ -51,10 +51,18 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
           popupAnchor: [0, -(marker.customSize || 25)],
         });
 
-        // Create popup content with all information
-        const imageHtml = marker.image
-          ? `<div class="marker-image"><img src="${marker.image}" alt="${marker.name}" /></div>`
-          : "";
+        // Derive candidate public image paths from marker.id (public/images/{id}.png/jpg/jpeg)
+        const FALLBACK_IMAGE =
+          "https://via.placeholder.com/320x180?text=No+Image";
+        const id = (marker as any).id || "";
+        const candidates = id ? [`/images/${id}.jpg`] : [];
+        // placeholder container unique per marker
+        const placeholderId = `marker-img-${i}`;
+
+        // Initial anchor should point to the first candidate if available, otherwise the fallback
+        const initialHref =
+          candidates.length > 0 ? candidates[0] : FALLBACK_IMAGE;
+        const imageHtml = `<a href="${initialHref}" target="_blank" rel="noopener noreferrer"><div id="${placeholderId}" class="marker-image" style="min-height:60px"></div></a>`;
 
         const popupContent = `
           <div class="custom-popup-content space-y-0">
@@ -73,6 +81,43 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
           closeButton: true,
           maxWidth: 300,
         });
+
+        // Try load first available candidate image (png -> jpg -> jpeg). Update popup only on success or final fallback.
+        (function tryLoadImageSequence(seq: string[]) {
+          let idx = 0;
+          function tryNext() {
+            if (idx >= seq.length) {
+              // no candidate worked — show fallback
+              const currentPopup = leafletMarker.getPopup();
+              if (currentPopup) {
+                const updated = popupContent.replace(
+                  `<div id="${placeholderId}" class="marker-image" style="min-height:60px"></div>`,
+                  `<div class="marker-image"><img src="${FALLBACK_IMAGE}" alt="no image" style="max-width:100%;height:auto;display:block;border-radius:6px" /></div>`
+                );
+                currentPopup.setContent(updated);
+                if (leafletMarker.isPopupOpen()) leafletMarker.openPopup();
+              }
+              return;
+            }
+            const url = seq[idx++];
+            const pre = new Image();
+            pre.onload = () => {
+              const currentPopup = leafletMarker.getPopup();
+              if (currentPopup) {
+                const imgHtml = `<div class="marker-image"><img src="${url}" alt="${marker.name}" style="max-width:100%;height:auto;display:block;border-radius:6px" /></div>`;
+                const updated = popupContent.replace(
+                  `<div id="${placeholderId}" class="marker-image" style="min-height:60px"></div>`,
+                  imgHtml
+                );
+                currentPopup.setContent(updated);
+                if (leafletMarker.isPopupOpen()) leafletMarker.openPopup();
+              }
+            };
+            pre.onerror = () => tryNext();
+            pre.src = url;
+          }
+          tryNext();
+        })(candidates);
 
         // Add marker to its group (or create a new group)
         if (!markerGroups[marker.group]) {

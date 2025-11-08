@@ -31,8 +31,21 @@
 }
 
 .custom-popup-content .marker-image {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centers the image horizontally */
+  padding: 6px 0;
+  padding-bottom: 0;
   margin: 10px 0;
   text-align: center;
+}
+
+.marker-popup-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover; /* keep aspect ratio while filling box if width/height set */
+  border-radius: 6px;
 }
 
 .custom-popup-content .marker-image img {

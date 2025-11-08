@@ -1,4 +1,5 @@
 export interface SheetMarker {
+  id: string; // new
   group: string;
   icon: string;
   customSize: number;
@@ -7,8 +8,6 @@ export interface SheetMarker {
   longitude: number;
   description: string;
   address: string;
-  secondName: string;
-  image: string;
 }
 
 export async function fetchGoogleSheetsData(
@@ -47,6 +46,7 @@ export async function fetchGoogleSheetsData(
     // Return fallback data
     return [
       {
+        id: "0",
         group: "Default",
         icon: "/marker.png",
         customSize: 25,
@@ -56,8 +56,6 @@ export async function fetchGoogleSheetsData(
         description:
           "Failed to load data from Google Sheets. This is a default marker.",
         address: "Default Address",
-        secondName: "",
-        image: "",
       },
     ];
   }
@@ -73,6 +71,11 @@ function parseCSV(csv: string): SheetMarker[] {
     .map((line) => {
       const values = parseCSVLine(line);
       const marker: SheetMarker = {
+        id:
+          values[headers.indexOf("ID")] ||
+          values[headers.indexOf("Id")] ||
+          values[headers.indexOf("id")] ||
+          "",
         group: values[headers.indexOf("Group")] || "",
         icon: values[headers.indexOf("Icon")] || "",
         customSize: parseInt(
@@ -84,8 +87,6 @@ function parseCSV(csv: string): SheetMarker[] {
         longitude: parseFloat(values[headers.indexOf("Longitude")] || "0"),
         description: values[headers.indexOf("Description")] || "",
         address: values[headers.indexOf("Address")] || "",
-        secondName: values[headers.indexOf("Second Name")] || "",
-        image: values[headers.indexOf("Image")] || "",
       };
       return marker;
     })
