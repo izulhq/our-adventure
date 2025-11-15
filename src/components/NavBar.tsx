@@ -3,7 +3,8 @@ import Image from "next/image";
 import { ChevronUp, Table2, X } from "lucide-react";
 import Dropdown from "./Dropdown";
 import TabsFloating from "./TabsFloating";
-import { FaQuestion } from "react-icons/fa6";
+import WishlistFloating from "./WishlistFloating";
+import { FaHeart, FaQuestion } from "react-icons/fa6";
 
 export default function NavBar({
   view,
@@ -14,6 +15,7 @@ export default function NavBar({
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showTabs, setShowTabs] = useState(false);
+  const [showWishlist, setShowWishlist] = useState(false);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -23,6 +25,10 @@ export default function NavBar({
     setShowTabs(!showTabs);
   };
 
+  const toggleWishlist = () => {
+    setShowWishlist(!showWishlist);
+  };
+
   return (
     <>
       <div className="fixed z-[9999] w-auto min-w-[320px] h-20 md:h-16 -translate-x-1/2 backdrop-blur-lg bg-[#f5f5f5]/40 border-[1px] border-gray-400 rounded-[12px] bottom-4 left-1/2 shadow-xl">
@@ -30,11 +36,18 @@ export default function NavBar({
           <div className="flex flex-auto items-center justify-between w-full">
             <div className="flex items-center">
               <Image
+                src="/favicon.ico"
+                alt="Logo"
+                width={40}
+                height={40}
+                className="inline md:hidden w-12 h-auto md:w-20 md:h-auto"
+              />
+              <Image
                 src="/logo.png"
                 alt="Logo"
                 width={100}
                 height={40}
-                className="w-30 h-auto md:w-20 md:h-auto"
+                className="hidden md:inline w-30 h-auto md:w-20 md:h-auto"
               />
             </div>
 
@@ -43,7 +56,7 @@ export default function NavBar({
               <div className="relative">
                 <button
                   onClick={toggleTabs}
-                  className={`p-3 md:p-2 rounded-full shadow-md overflow-hidden ${
+                  className={`p-2 md:p-2 rounded-full shadow-md overflow-hidden ${
                     showTabs
                       ? "bg-gradient-to-r from-red-500 to-red-700 hover:bg-gradient-to-l"
                       : "bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l"
@@ -86,7 +99,7 @@ export default function NavBar({
                       "_blank"
                     )
                   }
-                  className="p-3 md:p-2 rounded-full shadow-md bg-gradient-to-r from-green-600 to-green-700 hover:bg-gradient-to-l group"
+                  className="p-2 md:p-2 rounded-full shadow-md bg-gradient-to-r from-green-600 to-green-700 hover:bg-gradient-to-l group"
                 >
                   <Table2 className="w-6 h-6 md:w-5 md:h-5 text-white" />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 border border-gray-400 shadow-md bg-white text-gray-800 text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
@@ -95,11 +108,24 @@ export default function NavBar({
                 </button>
               </div>
 
+              {/* Wishlist button */}
+              <div className="relative">
+                <button
+                  onClick={toggleWishlist}
+                  className="p-2 md:p-2 rounded-full shadow-md bg-gradient-to-r from-red-600 to-red-500 hover:bg-gradient-to-l group"
+                >
+                  <FaHeart className="w-6 h-6 md:w-5 md:h-5 text-white" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 border border-gray-400 shadow-md bg-white text-gray-800 text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Wishlist
+                  </div>
+                </button>
+              </div>
+
               {/* ChevronUp button */}
               <div className="relative">
                 <button
                   onClick={toggleDropdown}
-                  className={`p-3 md:p-2 rounded-full shadow-md ${
+                  className={`p-2 md:p-2 rounded-full shadow-md ${
                     isDropdownOpen
                       ? "bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l"
                       : "bg-gradient-to-r from-gray-500 to-gray-700 hover:bg-gradient-to-l"
@@ -130,6 +156,9 @@ export default function NavBar({
             />
           </div>
         </div>
+      )}
+      {showWishlist && (
+        <WishlistFloating isVisible={true} toggleWishlist={toggleWishlist} />
       )}
     </>
   );

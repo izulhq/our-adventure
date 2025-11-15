@@ -82,7 +82,7 @@ export default function TabsFloating({
     <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-xl border-[4px] border-white rounded-lg w-[95vw] md:w-auto">
       <Tabs
         defaultValue={defaultTab}
-        className="w-full md:w-[600px] h-[calc(95vw/2)] md:h-[300px] items-center border border-md rounded-sm p-4 bg-[url(/cover.png)] bg-cover bg-center shadow-xl"
+        className="w-full md:w-[600px] h-[calc(95vw/2)] md:h-[300px] items-center border border-md rounded-sm rounded-br-none rounded-bl-none p-4 bg-[url(/cover.png)] bg-cover bg-center shadow-xl"
       ></Tabs>
       <button
         onClick={toggleTabs}
@@ -91,6 +91,27 @@ export default function TabsFloating({
       >
         <X className="h-5 w-5" />
       </button>
+      <div className="bg-white flex flex-col">
+        <h3 className="text-sm md:text-md font-semibold p-4 pb-2">
+          what the fuck is this (?!)
+        </h3>
+        <h2 className="px-4 text-xs md:text-sm">
+          so basically, this is our interactive adventure map. whenever and
+          wherever we go, we both of us collect data like coordinates, names,
+          descriptions, and addresses that are being stored in Google Sheets and
+          voila, the data automatically displayed here. we also have a wishlist
+          of a future destinations which also pulled directly from the same
+          sheet, making everything feels easy to update. &lt;3{" "}
+        </h2>
+        <h2 className="p-4 pt-2 text-xs md:text-sm">
+          to make the adventure more immersive, the map includes a{" "}
+          <strong>fog of war</strong> kind of feature. places that we
+          haven&apos;t explored yet appear darker, while areas we&apos;ve
+          visited become clear. this effect is built using turf.js by creating a
+          dark world polygon and revealing light areas withing a 5 kilometers
+          buffer around each visited point.{" "}
+        </h2>
+      </div>
     </div>
   );
 }

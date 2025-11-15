@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
+import * as turf from "@turf/turf";
 import "leaflet/dist/leaflet.css";
 import "@/styles/styles.css";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -14,6 +15,8 @@ interface IconDefault extends L.Icon.Default {
 
 const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
   const mapRef = useRef<L.Map | null>(null);
+  const overlayRef = useRef<L.Layer | null>(null);
+  const [fogVisible, setFogVisible] = useState(true);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -38,6 +41,157 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
 
       // Create bounds object to track marker positions
       const bounds = L.latLngBounds([]);
+
+      // Create exploration overlay with MultiPolygon GeoJSON structure
+      const createExplorationOverlay = (exploredPoints: SheetMarker[]) => {
+        try {
+          // Step 1: Create whole world polygon
+          const wholeWorldPolygon = [
+            [-180, -90],
+            [-180, 90],
+            [180, 90],
+            [180, -90],
+            [-180, -90],
+          ];
+
+          // Step 2: Create buffer for each point and collect buffer polygons
+          const bufferPolygons: any[] = [];
+
+          exploredPoints.forEach((point) => {
+            try {
+              // Create point feature
+              const pointFeature = turf.point([
+                point.longitude,
+                point.latitude,
+              ]);
+
+              // Create 5km buffer
+              const buffer = turf.buffer(pointFeature, 5, {
+                units: "kilometers",
+              });
+
+              if (buffer && buffer.geometry.type === "Polygon") {
+                bufferPolygons.push(buffer);
+
+                // Log individual buffer result as GeoJSON string
+                console.log(
+                  `Buffer result for ${point.name}:`,
+                  JSON.stringify(buffer, null, 2)
+                );
+              }
+            } catch (error) {
+              console.warn("Error creating buffer for point:", point, error);
+            }
+          });
+
+          // Step 2.5: Merge all buffer polygons into one using union operations
+          let mergedBufferResult = null;
+
+          if (bufferPolygons.length > 0) {
+            try {
+              // Start with the first buffer
+              mergedBufferResult = bufferPolygons[0];
+
+              // Union with each subsequent buffer
+              for (let i = 1; i < bufferPolygons.length; i++) {
+                const unionResult: any = turf.union(
+                  turf.featureCollection([
+                    mergedBufferResult,
+                    bufferPolygons[i],
+                  ])
+                );
+                if (unionResult) {
+                  mergedBufferResult = unionResult;
+                }
+              }
+
+              console.log(
+                "Merged buffer result:",
+                JSON.stringify(mergedBufferResult, null, 2)
+              );
+            } catch (error) {
+              console.warn("Error merging buffers:", error);
+              mergedBufferResult = bufferPolygons[0]; // Fallback to first buffer
+            }
+          }
+
+          // Step 3: Create Polygon GeoJSON with merged buffer as hole
+          let polygonCoordinates = [wholeWorldPolygon]; // Start with world boundary
+
+          // Add merged buffer result as hole if it exists
+          if (mergedBufferResult && mergedBufferResult.geometry) {
+            if (mergedBufferResult.geometry.type === "Polygon") {
+              // Single polygon - add as hole
+              polygonCoordinates.push(
+                mergedBufferResult.geometry.coordinates[0]
+              );
+            } else if (mergedBufferResult.geometry.type === "MultiPolygon") {
+              // MultiPolygon - add each polygon as separate hole
+              mergedBufferResult.geometry.coordinates.forEach(
+                (polygon: any) => {
+                  polygonCoordinates.push(polygon[0]); // Get exterior ring of each polygon
+                }
+              );
+            }
+          }
+
+          const multiPolygonGeoJSON: GeoJSON.Feature<GeoJSON.Polygon> = {
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "Polygon",
+              coordinates: polygonCoordinates,
+            },
+          };
+
+          // Log the complete MultiPolygon GeoJSON as string
+          console.log(
+            "Complete Polygon GeoJSON with merged holes:",
+            JSON.stringify(multiPolygonGeoJSON, null, 2)
+          );
+          console.log("Number of coordinate rings:", polygonCoordinates.length);
+
+          // Step 4: Add the MultiPolygon to map with dark transparent color
+          return L.geoJSON(multiPolygonGeoJSON, {
+            style: {
+              stroke: false,
+              fill: true,
+              fillColor: "#000000",
+              fillOpacity: 0.3,
+              interactive: false,
+            },
+          });
+        } catch (error) {
+          console.warn("Error creating exploration overlay:", error);
+          // Fallback to simple dark overlay
+          const fallbackGeoJSON: GeoJSON.Feature<GeoJSON.Polygon> = {
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "Polygon",
+              coordinates: [
+                [
+                  [-179.99, 89.99],
+                  [-179.99, -89.99],
+                  [179.99, -89.99],
+                  [179.99, 89.99],
+                  [-179.99, 89.99],
+                ],
+              ],
+            },
+          };
+
+          return L.geoJSON(fallbackGeoJSON, {
+            style: {
+              stroke: false,
+              fill: true,
+              fillColor: "#000000",
+              fillOpacity: 0.3,
+              interactive: false,
+            },
+          });
+        }
+      };
 
       markers.forEach((marker, i) => {
         // Add marker position to bounds
@@ -134,12 +288,12 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
         });
       } else {
         // Fallback to default view if no markers
-        map.setView([-7.566, 110.828], 13);
+        map.setView([-7.515056, 110.626354], 13);
       }
 
       // Create layer control if there are multiple groups
       if (Object.keys(markerGroups).length > 1) {
-        const overlays: { [key: string]: L.LayerGroup } = {};
+        const overlays: { [key: string]: L.Layer } = {};
 
         // For each group, create a layer with custom HTML that keeps elements in line
         Object.entries(markerGroups).forEach(([groupName, layer]) => {
@@ -155,6 +309,15 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
           ] = layer;
         });
 
+        // Add fog overlay (dark world polygon) to overlays so it appears in the layers control
+        if (overlayRef.current) {
+          overlays[
+            `<span class="layer-control-item align-middle">
+            fog (areas explored)
+            </span>`
+          ] = overlayRef.current;
+        }
+
         L.control
           .layers({}, overlays, {
             collapsed: true,
@@ -162,14 +325,34 @@ const LeafletMap = ({ markers }: { markers: SheetMarker[] }) => {
           })
           .addTo(map);
       }
-    }
 
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-      }
-    };
+      // Cleanup overlay on unmount or re-render
+      return () => {
+        if (mapRef.current) {
+          if (
+            overlayRef.current &&
+            mapRef.current.hasLayer(overlayRef.current)
+          ) {
+            mapRef.current.removeLayer(overlayRef.current);
+          }
+          mapRef.current.remove();
+        }
+      };
+    }
   }, [markers]);
+
+  // Effect to add/remove overlay when fogVisible changes
+  useEffect(() => {
+    const map = mapRef.current;
+    const overlay = overlayRef.current;
+    if (!map || !overlay) return;
+
+    if (fogVisible) {
+      if (!map.hasLayer(overlay)) overlay.addTo(map);
+    } else {
+      if (map.hasLayer(overlay)) map.removeLayer(overlay);
+    }
+  }, [fogVisible]);
 
   return <div id="map" className="h-full w-full" />;
 };
