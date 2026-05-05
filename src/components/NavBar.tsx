@@ -3,7 +3,8 @@ import Image from "next/image";
 import { ChevronUp, Table2, X } from "lucide-react";
 import Dropdown from "./Dropdown";
 import TabsFloating from "./TabsFloating";
-import { FaQuestion } from "react-icons/fa6";
+import WishlistFloating from "./WishlistFloating";
+import { FaHeart, FaQuestion } from "react-icons/fa6";
 
 export default function NavBar({
   view,
@@ -107,6 +108,19 @@ export default function NavBar({
                 </button>
               </div>
 
+              {/* Wishlist button */}
+              <div className="relative">
+                <button
+                  onClick={toggleWishlist}
+                  className="p-2 md:p-2 rounded-full shadow-md bg-gradient-to-r from-red-600 to-red-500 hover:bg-gradient-to-l group"
+                >
+                  <FaHeart className="w-6 h-6 md:w-5 md:h-5 text-white" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 border border-gray-400 shadow-md bg-white text-gray-800 text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Wishlist
+                  </div>
+                </button>
+              </div>
+
               {/* ChevronUp button */}
               <div className="relative">
                 <button
@@ -142,6 +156,9 @@ export default function NavBar({
             />
           </div>
         </div>
+      )}
+      {showWishlist && (
+        <WishlistFloating isVisible={true} toggleWishlist={toggleWishlist} />
       )}
     </>
   );
