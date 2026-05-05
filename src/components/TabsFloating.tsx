@@ -91,6 +91,22 @@ export default function TabsFloating({
       >
         <X className="h-5 w-5" />
       </button>
+        <div className="bg-white flex flex-col pb-4 gap-2">
+        <h3 className="text-sm px-4 pt-4 md:text-md font-semibold">
+          what the fuck is this (?!)
+        </h3>
+        <h2 className="px-4 text-xs md:text-sm">
+          so basically, this is our interactive adventure map. whenever and
+          wherever we go, we both of us collect data like coordinates, names,
+          descriptions, and addresses that are being stored in Google Sheets and
+          voila, the data automatically displayed here. we also have a wishlist
+          of a future destinations which also pulled directly from the same
+          sheet, making everything feels easy to update.
+        </h2>
+        <h2 className="px-4 text-xs md:text-sm">
+          made with love by us &lt;3{" "}
+        </h2>
+      </div>
     </div>
   );
 }
