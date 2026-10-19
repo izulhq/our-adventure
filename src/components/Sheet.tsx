@@ -8,11 +8,13 @@ export default function Sheet({
   onClose,
   title,
   children,
+  className = "",
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -26,7 +28,7 @@ export default function Sheet({
   return (
     <dialog
       ref={ref}
-      className="sheet"
+      className={`sheet ${className}`}
       aria-labelledby={titleId}
       onClose={onClose}
       // A click on the dialog element itself (not its contents) is a backdrop click

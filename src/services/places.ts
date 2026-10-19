@@ -19,6 +19,9 @@ export const DUO = [
   { group: "dapta been here", label: "dapta", initial: "d", color: "#34D1FF" },
 ] as const;
 
+// Sheet IDs are 1..n and new ones are timestamps, so a numeric sort is "newest first"
+export const newestFirst = (a: Place, b: Place) => (Number(b.id) || 0) - (Number(a.id) || 0);
+
 export async function fetchPlaces(): Promise<Place[]> {
   const res = await fetch("/api/places", { cache: "no-store" });
   if (!res.ok) throw new Error(`Failed to load places: ${res.status}`);

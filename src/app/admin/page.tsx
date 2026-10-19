@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import DuoFilter from "@/components/DuoFilter";
 import PlaceEditor from "@/components/PlaceEditor";
-import { DUO, Place, fetchPlaces } from "@/services/places";
+import { DUO, Place, fetchPlaces, newestFirst } from "@/services/places";
 
 const LeafletMap = dynamic(() => import("@/components/Maps"), { ssr: false });
 const TIGHT = { topLeft: [24, 24], bottomRight: [24, 24] } as { topLeft: [number, number]; bottomRight: [number, number] };
@@ -23,9 +23,6 @@ const BLANK: Place = {
   address: "",
   image: "",
 };
-
-// Sheet IDs are 1..n and new ones are timestamps, so a numeric sort is "newest first"
-const newestFirst = (a: Place, b: Place) => (Number(b.id) || 0) - (Number(a.id) || 0);
 
 const checkPassword = (password: string) =>
   fetch("/api/places", { method: "HEAD", headers: { "x-admin-password": password } }).then((r) => r.ok);

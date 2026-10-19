@@ -1,5 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import DuoFilter from "@/components/DuoFilter";
 import Sheet from "@/components/Sheet";
@@ -60,6 +61,9 @@ export default function Home() {
         <button type="button" className="btn" onClick={() => setSheet("wishlist")}>
           wishlist
         </button>
+        <Link href="/gallery" className="btn">
+          photos
+        </Link>
         <button type="button" className="btn" onClick={() => setSheet("about")}>
           about
         </button>
