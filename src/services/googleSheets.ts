@@ -1,67 +1,18 @@
-export interface SheetMarker {
-  id: string; // new
-  group: string;
-  icon: string;
-  customSize: number;
-  name: string;
-  latitude: number;
-  longitude: number;
-  description: string;
-  address: string;
+// Only used by scripts/import-sheets.mjs to copy the old Google Sheet into the database.
+import type { Place } from "./places";
+
+type SheetMarker = Omit<Place, "list">;
+
+// Google Drive share links aren't loadable by <img>; rewrite them to Drive's thumbnail URL.
+// Any other URL passes through unchanged.
+export function toImageUrl(link: string): string {
+  const driveId = link.match(/drive\.google\.com\/.*?(?:\/d\/|[?&]id=)([\w-]+)/)?.[1];
+  return driveId
+    ? `https://drive.google.com/thumbnail?id=${driveId}&sz=w1000`
+    : link.trim();
 }
 
-export async function fetchGoogleSheetsData(
-  sheetId: string,
-  sheetTab: string
-): Promise<SheetMarker[]> {
-  try {
-    // Use the public export to CSV feature - this is more reliable for larger sheets
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
-      sheetTab
-    )}`;
-
-    // Add cache control and timeout options
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
-
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        "Cache-Control": "no-cache",
-        Pragma: "no-cache",
-      },
-    });
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch Google Sheets data: ${response.status}`);
-    }
-
-    const csvText = await response.text();
-    const markers = parseCSV(csvText);
-    return markers;
-  } catch (error) {
-    console.error("Error fetching Google Sheets data:", error);
-
-    // Return fallback data
-    return [
-      {
-        id: "0",
-        group: "Default",
-        icon: "/marker.png",
-        customSize: 25,
-        name: "Default Location",
-        latitude: -7.566,
-        longitude: 110.828,
-        description:
-          "Failed to load data from Google Sheets. This is a default marker.",
-        address: "Default Address",
-      },
-    ];
-  }
-}
-
-function parseCSV(csv: string): SheetMarker[] {
+export function parseCSV(csv: string): SheetMarker[] {
   const lines = csv.split("\n");
   const headers = parseCSVLine(lines[0]);
 
@@ -87,6 +38,7 @@ function parseCSV(csv: string): SheetMarker[] {
         longitude: parseFloat(values[headers.indexOf("Longitude")] || "0"),
         description: values[headers.indexOf("Description")] || "",
         address: values[headers.indexOf("Address")] || "",
+        image: toImageUrl(values[headers.indexOf("Image")] || ""),
       };
       return marker;
     })
